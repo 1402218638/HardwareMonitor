@@ -20,6 +20,16 @@ jobs:
       - name: Publish
         run: dotnet publish src/HardwareMonitor/HardwareMonitor.csproj -c Release -r win-x64 -p:Platform=x64 --self-contained -o publish
 
+      - name: Ensure resources.pri in publish output
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "publish/resources.pri")) {
+            $pri = Get-ChildItem -Path bin,obj -Recurse -Include "resources.pri","HardwareMonitor.pri" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($pri) { Copy-Item $pri.FullName "publish/resources.pri" -Force; Write-Host "Copied app PRI from $($pri.FullName)" }
+            else { Write-Warning "App PRI not found in bin/obj!" }
+          } else { Write-Host "resources.pri already present" }
+          Get-ChildItem publish -Filter *.pri | ForEach-Object { Write-Host "PRI in publish: $($_.Name) ($($_.Length) bytes)" }
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

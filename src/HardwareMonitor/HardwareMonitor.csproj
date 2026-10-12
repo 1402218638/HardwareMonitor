@@ -23,4 +23,13 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260921001" />
   </ItemGroup>
 
+  <!-- dotnet publish 不会自动拷贝应用自身的 resources.pri，缺失会导致启动即崩溃，这里补拷 -->
+  <Target Name="EnsureAppPriInPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <_AppPri Include="$(OutputPath)resources.pri" Condition="Exists('$(OutputPath)resources.pri')" />
+      <_AppPri Include="$(IntermediateOutputPath)resources.pri" Condition="Exists('$(IntermediateOutputPath)resources.pri')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_AppPri)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>

@@ -52,10 +52,11 @@ public sealed class HardwareMonitorService : IDisposable
         {
             computer.Open();
             _computer = computer;
+            App.Log($"HardwareMonitorService: computer opened, hardware count={computer.Hardware.Length}");
         }
-        catch
+        catch (Exception ex)
         {
-            // 驱动加载失败等情况：保持无数据状态，不阻塞界面
+            App.Log("HardwareMonitorService: computer.Open FAILED: " + ex);
         }
     }
 

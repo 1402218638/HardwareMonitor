@@ -31,19 +31,24 @@ public sealed partial class MainWindow : Window
 
     public MainWindow()
     {
+        App.Log("MainWindow ctor: begin");
         InitializeComponent();
+        App.Log("MainWindow ctor: InitializeComponent done");
 
         Title = "Hardware Monitor";
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
         SystemBackdrop = new MicaBackdrop();
         AppWindow.Resize(new SizeInt32(1240, 720));
+        App.Log("MainWindow ctor: window chrome configured");
 
         _hardwareService.Start();
+        App.Log($"MainWindow ctor: hardware service started (elevated={IsElevated()})");
 
         _timer.Interval = TimeSpan.FromSeconds(1);
         _timer.Tick += OnTimerTick;
         _timer.Start();
+        App.Log("MainWindow ctor: timer started");
 
         Closed += (_, _) =>
         {

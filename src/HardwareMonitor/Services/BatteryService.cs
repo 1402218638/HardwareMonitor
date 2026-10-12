@@ -74,8 +74,9 @@ public static class BatteryService
                 FullWh = fullWh,
             };
         }
-        catch
+        catch (Exception ex)
         {
+            App.Log("BatteryService: read FAILED: " + ex);
             return new BatterySnapshot { State = BatteryState.Unknown, StateText = "不可用" };
         }
     }
