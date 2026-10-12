@@ -52,7 +52,7 @@ public sealed class HardwareMonitorService : IDisposable
         {
             computer.Open();
             _computer = computer;
-            App.Log($"HardwareMonitorService: computer opened, hardware count={computer.Hardware.Length}");
+            App.Log($"HardwareMonitorService: computer opened, hardware count={computer.Hardware.Count}");
         }
         catch (Exception ex)
         {
