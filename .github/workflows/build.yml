@@ -23,12 +23,14 @@ jobs:
       - name: Ensure resources.pri in publish output
         shell: pwsh
         run: |
+          Get-ChildItem -Path . -Recurse -Filter *.pri -ErrorAction SilentlyContinue |
+            ForEach-Object { Write-Host "PRI_FOUND: $($_.FullName) ($($_.Length) bytes)" }
           if (-not (Test-Path "publish/resources.pri")) {
-            $pri = Get-ChildItem -Path bin,obj -Recurse -Include "resources.pri","HardwareMonitor.pri" -ErrorAction SilentlyContinue | Select-Object -First 1
-            if ($pri) { Copy-Item $pri.FullName "publish/resources.pri" -Force; Write-Host "Copied app PRI from $($pri.FullName)" }
-            else { Write-Warning "App PRI not found in bin/obj!" }
-          } else { Write-Host "resources.pri already present" }
-          Get-ChildItem publish -Filter *.pri | ForEach-Object { Write-Host "PRI in publish: $($_.Name) ($($_.Length) bytes)" }
+            $pri = Get-ChildItem -Path . -Recurse -Filter "resources.pri" -ErrorAction SilentlyContinue |
+              Where-Object { $_.FullName -notmatch '\\publish\\' } | Select-Object -First 1
+            if ($pri) { Copy-Item $pri.FullName "publish/resources.pri" -Force; Write-Host "COPIED_PRI from $($pri.FullName)" }
+            else { Write-Warning "PRI_NOT_FOUND anywhere" }
+          } else { Write-Host "resources.pri already in publish" }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
